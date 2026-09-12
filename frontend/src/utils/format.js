@@ -1,0 +1,1 @@
+export const date = (value) => value ? new Intl.DateTimeFormat(undefined, { year: 'numeric', month: 'short', day: 'numeric' }).format(new Date(value)) : '—'; export const dateInput = (value) => value ? new Date(value).toISOString().slice(0, 10) : ''; export const friendly = (value) => value ? value.split('_').map((part) => part[0] + part.slice(1).toLowerCase()).join(' ') : '—';
