@@ -1,2 +1,141 @@
-import { useEffect, useState } from 'react'; import { Button, Input, Select } from '../common/UI'; import { dateInput } from '../../utils/format'; const blank = { name: '', description: '', priority: 'MEDIUM', status: 'PENDING', dueDate: '' };
-export default function TaskForm({ task, projectId, onSubmit, onCancel, saving }) { const [form, setForm] = useState(blank); const [error, setError] = useState(''); useEffect(() => setForm(task ? { ...blank, ...task, dueDate: dateInput(task.dueDate) } : blank), [task]); const change = (e) => setForm({ ...form, [e.target.name]: e.target.value }); const submit = (e) => { e.preventDefault(); if (!form.name.trim()) return setError('Task name is required.'); setError(''); const data = { ...form, name: form.name.trim(), description: form.description.trim() || null, dueDate: form.dueDate || null }; if (!task) data.projectId = projectId; onSubmit(data); }; return <form onSubmit={submit}><div className="form-grid"><Input label="Task name" name="name" value={form.name} onChange={change} placeholder="e.g. Prepare launch brief" /><Select label="Priority" name="priority" value={form.priority} onChange={change}><option value="LOW">Low</option><option value="MEDIUM">Medium</option><option value="HIGH">High</option></Select><Select label="Status" name="status" value={form.status} onChange={change}><option value="PENDING">Pending</option><option value="IN_PROGRESS">In Progress</option><option value="COMPLETED">Completed</option></Select><Input label="Due date" type="date" name="dueDate" value={form.dueDate || ''} onChange={change} /><label className="field field-wide"><span>Description</span><textarea name="description" value={form.description || ''} onChange={change} placeholder="Add any useful context" rows="4" /></label></div>{error && <p className="form-error">{error}</p>}<div className="form-actions"><Button type="button" variant="secondary" onClick={onCancel}>Cancel</Button><Button type="submit" loading={saving}>{task ? 'Save changes' : 'Create task'}</Button></div></form>; }
+import { useEffect, useState } from 'react';
+import { Button, Input, Select } from '../common/UI';
+import { dateInput } from '../../utils/format';
+
+const blank = {
+  name: '',
+  description: '',
+  priority: 'MEDIUM',
+  status: 'PENDING',
+  dueDate: '',
+};
+
+export default function TaskForm({
+  task,
+  projectId,
+  onSubmit,
+  onCancel,
+  saving,
+}) {
+  const [form, setForm] = useState(blank);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (task) {
+      setForm({
+        name: task.name || '',
+        description: task.description || '',
+        priority: task.priority || 'MEDIUM',
+        status: task.status || 'PENDING',
+        dueDate: dateInput(task.dueDate),
+      });
+    } else {
+      setForm(blank);
+    }
+  }, [task]);
+
+  const change = (e) => {
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const submit = (e) => {
+    e.preventDefault();
+
+    if (!form.name.trim()) {
+      return setError('Task name is required.');
+    }
+
+    setError('');
+
+    const data = {
+      name: form.name.trim(),
+      description: form.description.trim() || null,
+      priority: form.priority,
+      status: form.status,
+      dueDate: form.dueDate || null,
+    };
+
+    if (!task) {
+      data.projectId = projectId;
+    }
+
+    onSubmit(data);
+  };
+
+  return (
+    <form onSubmit={submit}>
+      <div className="form-grid">
+        <Input
+          label="Task name"
+          name="name"
+          value={form.name}
+          onChange={change}
+          placeholder="e.g. Prepare launch brief"
+        />
+
+        <Select
+          label="Priority"
+          name="priority"
+          value={form.priority}
+          onChange={change}
+        >
+          <option value="LOW">Low</option>
+          <option value="MEDIUM">Medium</option>
+          <option value="HIGH">High</option>
+        </Select>
+
+        <Select
+          label="Status"
+          name="status"
+          value={form.status}
+          onChange={change}
+        >
+          <option value="PENDING">Pending</option>
+          <option value="IN_PROGRESS">In Progress</option>
+          <option value="COMPLETED">Completed</option>
+        </Select>
+
+        <Input
+          label="Due date"
+          type="date"
+          name="dueDate"
+          value={form.dueDate || ''}
+          onChange={change}
+        />
+
+        <label className="field field-wide">
+          <span>Description</span>
+          <textarea
+            name="description"
+            value={form.description || ''}
+            onChange={change}
+            placeholder="Add any useful context"
+            rows="4"
+          />
+        </label>
+      </div>
+
+      {error && <p className="form-error">{error}</p>}
+
+      <div className="form-actions">
+        <Button
+          type="button"
+          variant="secondary"
+          onClick={onCancel}
+        >
+          Cancel
+        </Button>
+
+        <Button
+          type="submit"
+          loading={saving}
+        >
+          {task ? 'Save changes' : 'Create task'}
+        </Button>
+      </div>
+    </form>
+  );
+}
