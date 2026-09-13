@@ -9,12 +9,21 @@ const dashboardRoutes = require('./routes/dashboard.routes');
 const { notFound, errorHandler } = require('./middleware/error.middleware');
 
 const app = express();
-const developmentOrigins = ['http://localhost:5173', 'http://localhost:5174'];
+const developmentOrigins = [
+  'http://localhost:3000',
+  'http://localhost:5173',
+  'http://localhost:5174'
+];
+
 const productionOrigins = (process.env.CLIENT_URL || '')
   .split(',')
   .map((origin) => origin.trim())
   .filter(Boolean);
-const allowedOrigins = process.env.NODE_ENV === 'production' ? productionOrigins : developmentOrigins;
+
+const allowedOrigins =
+  process.env.NODE_ENV === 'production'
+    ? productionOrigins
+    : developmentOrigins;
 
 const corsOptions = {
   origin(origin, callback) {
